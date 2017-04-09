@@ -1,6 +1,9 @@
 package na.models
 
-case class Package(id: Long, name: String, override val version: Int, documents: Seq[Document])
-    extends Entity with Versioning {
+import java.time.LocalDateTime
+
+case class Package(override val id: Long, override val name: String, createdAt: Option[LocalDateTime], createdBy: Option[Person],
+                   documents: Seq[Document], override val version: Int)
+    extends Entity with Versioned {
 
 }

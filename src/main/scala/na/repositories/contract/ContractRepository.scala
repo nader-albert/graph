@@ -7,9 +7,10 @@ object ContractRepository extends RelationalRepository[Contract] with GraphRepos
 
     def findInGDM(contract: => Contract): Contract = {
         //model with basic attributes and all relations from graph
-        find
+       // find
         //TODO: access graph driver here
-        Contract()
+        //Contract()
+      ???
     }
 
     def findInRDM (id: Long): Contract = ???

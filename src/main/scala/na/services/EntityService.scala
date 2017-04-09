@@ -6,7 +6,8 @@ trait EntityService [T] {
 
     def getOne(id: Long): T
 
-    def update(entity: T)
+    //TODO: do we need this here ? assuming EntityService is now dealing with Templates
+    //def update(entity: T)
 
     def delete(entity: T)
 

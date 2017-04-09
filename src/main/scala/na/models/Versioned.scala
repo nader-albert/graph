@@ -1,6 +1,6 @@
 package na.models
 
-trait Versioning {
+trait Versioned {
 
     val version: Int
 

@@ -2,21 +2,27 @@ package na.models
 
 import java.time.LocalDateTime
 
-case class Contract private (id: Long, name: String, override val version: Int, documentsPackage: Package,
+case class Contract private (override val id: Long, override val name: String, override val version: Int, documentsPackage: Package,
                              signed: Boolean, signDate: Option[LocalDateTime], signedBy: Option[Candidate],
                              title: Option[String], description: Option[String])
 
-    extends Entity with Versioning {
+    extends Entity with Versioned {
 
 
 }
 
 object Contract {
 
+    /**
+      * to be used by graph repositories
+      * */
     def apply(id: Long, name: String, version: Int, documentsPackage: Package): Contract = {
         Contract(id, name, version, documentsPackage, signed= false, signDate = None, signedBy = None, title = None, description = None)
     }
 
+  /**
+    * used by relational repositories
+    */
     def apply(contract: Contract, signed: Boolean, signDate: LocalDateTime, signedBy: Candidate, title: String, description: String): Contract = {
         contract.copy(signed = signed, signDate = Some(signDate), signedBy = Some(signedBy), title = Some(title), description = Some(description))
     }
