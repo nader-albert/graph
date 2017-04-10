@@ -23,17 +23,17 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
     /**
       * creates a new version and link it with the given template
       * */
-    def create(template: A, entity: B): A = ???
+    def create(template: A, entity: B): B
 
     def find(template: A): B = ???
 
-    protected def withTransaction(expression: => (String, Value)): Option[StatementResult] = {
+    protected def executeInTransaction(statement: => (String, Value)): Option[StatementResult] = {
         val session = driver.session
 
         val tx = session.beginTransaction
 
         try {
-            val result = tx.run("CREATE (a:Person {name: {name}, title: {title}})", parameters("name", "Arthur", "title", "King"))
+            val result = tx.run(statement._1, statement._2)
             tx.success()
             Some(result)
         } catch {

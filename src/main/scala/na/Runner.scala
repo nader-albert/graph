@@ -3,9 +3,11 @@ package na
 import java.io.File
 
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
-import na.models.Contract
+import na.models.contracts.Contract
 import na.models.neo4j.Driver
+import na.repositories.contract.ContractRepository
 import na.services.ContractService
+import ContractPool._
 
 object Runner extends App {
 
@@ -22,7 +24,13 @@ object Runner extends App {
 
     //print(pool.count)
 
-    new Driver
+    //new Driver
+
+    //ContractPool.randomContracts.foreach{ContractRepository.create}
+
+    randomContractRevisionsFor(randomContracts).foreach(revision => ContractRepository.create(revision.contract, revision))
 
     //graphDb.shutdown
+
 }
+

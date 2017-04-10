@@ -1,6 +1,6 @@
 package na.services
 
-import na.models.{ContractRevision, Contract}
+import na.models.contracts.{ContractRevision, Contract}
 import na.repositories.contract.ContractRepository
 import ContractRepository._
 
@@ -11,7 +11,7 @@ class ContractService(template: Contract) extends TemplateService[Contract] with
         ???
     }
 
-    override def delete(entity: Contract): Unit = ???
+   // override def delete(entity: Contract): Unit = ???
 
     override def getOne(template: Contract): Contract = {
         //1- locate contract with all relations in graph ... contract returns with a valid package
@@ -37,7 +37,7 @@ class ContractService(template: Contract) extends TemplateService[Contract] with
     //override def update(entity: Contract): Unit = ???
 
 
-    override def delete(entity: ContractRevision): ContractRevision = ???
+    //override def delete(entity: ContractRevision): ContractRevision = ???
 
     override def getOriginal(template: Contract): ContractRevision = {
       // assuming the ID here refers to the contract template instance (that doesn't hold any versioning specific information)

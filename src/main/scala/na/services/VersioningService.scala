@@ -42,7 +42,7 @@ trait VersioningService[A <: Template, B <: Entity with Versioned] {
     /***
       * marks a revision as deleted
       * */
-    def delete(revision: B): B
+    //def delete(revision: B): B
 
     /**
       * restores a previously deleted revision
