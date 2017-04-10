@@ -1,14 +1,14 @@
 package na.services
 
-trait EntityService [T] {
+trait TemplateService [T] {
 
-    def add(entity: T)
+    def add(template: T)
 
-    def getOne(id: Long): T
+    def getOne(template: T): T
 
     //TODO: do we need this here ? assuming EntityService is now dealing with Templates
     //def update(entity: T)
 
-    def delete(entity: T)
+    def delete(template: T)
 
 }

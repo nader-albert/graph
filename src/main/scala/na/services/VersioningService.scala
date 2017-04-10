@@ -5,7 +5,7 @@ import na.models.{Entity, Template, Versioned}
 trait VersioningService[A <: Template, B <: Entity with Versioned] {
 
   /**
-    * adds a new revision to the given template
+    * adds a new revision to the given template, and advances the current version to the given one
     * */
     def addRevision(template: A, revision: B)
 
@@ -20,14 +20,24 @@ trait VersioningService[A <: Template, B <: Entity with Versioned] {
     def getOriginal(template: A): B
 
     /***
-      * retrieves the next revision after the current one
+      * retrieves the next revision after the current one, for the given template
       * */
-    def getNext(revision: B): B
+    def getNext(template: A): B
+
+    /***
+      * retrieves the next revision after the given one, for the given template
+      * */
+    def getNext(template: A, revision: B): B
 
     /***
       * retrieves the previous revision after the current one
       * */
-    def getPrevious(revision: B): B
+    def getPrevious(template: A): B
+
+    /***
+      * retrieves the previous revision after the given one, for the given template
+      * */
+    def getPrevious(template: A, revision: B): B
 
     /***
       * marks a revision as deleted

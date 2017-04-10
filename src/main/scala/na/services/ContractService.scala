@@ -1,29 +1,32 @@
 package na.services
 
-import na.models.Contract
+import na.models.{ContractRevision, Contract}
 import na.repositories.contract.ContractRepository
-
 import ContractRepository._
 
-class ContractService extends EntityService[Contract] with VersioningService[Contract]{
+class ContractService(template: Contract) extends TemplateService[Contract] with VersioningService[Contract, ContractRevision]{
 
     override def add(entity: Contract): Unit = {
         //
         ???
     }
 
-    override def getOne(id: Long): Contract = {
+    override def delete(entity: Contract): Unit = ???
+
+    override def getOne(template: Contract): Contract = {
         //1- locate contract with all relations in graph ... contract returns with a valid package
         //2- enrich contract with supportive data from RDBMS
 
-        findInGDM(findInRDM(id))
+        ///findInGDM(findInRDM(template.id))
+        ???
     }
 
-    override def getLatest(id: Long): Contract = {
+    override def getLatest(template: Contract): ContractRevision = {
         //1- locate contract with all relations in graph ... contract returns with a valid package
         //2- enrich contract with supportive data from RDBMS
 
-        findInGDM(findInRDM(id))
+        //findInGDM(findInRDM(id))
+        ???
     }
 
     //override def synchronise(entity: Contract): Contract = {
@@ -31,11 +34,12 @@ class ContractService extends EntityService[Contract] with VersioningService[Con
         // Returns another contract model that encapsulates the latest versions of al its composites.
     //}
 
-    override def update(entity: Contract): Unit = ???
+    //override def update(entity: Contract): Unit = ???
 
-    override def delete(entity: Contract): Unit = ???
 
-    override def getOriginal(id: Long): Contract = {
+    override def delete(entity: ContractRevision): ContractRevision = ???
+
+    override def getOriginal(template: Contract): ContractRevision = {
       // assuming the ID here refers to the contract template instance (that doesn't hold any versioning specific information)
       // this assumes that a template will be created with the first version of an entity,
 
@@ -49,13 +53,41 @@ class ContractService extends EntityService[Contract] with VersioningService[Con
       ???
     }
 
-    override def getNext(id: Long): Contract = ???
+    /**
+      * adds a new revision to the given template, and advances the current version to the given one
+      **/
+    override def addRevision(template: Contract, revision: ContractRevision): Unit = ???
 
-    override def getPrevious(id: Long): Contract = ???
+    /** *
+      * retrieves the next revision after the current one, for the given template
+      * */
+    override def getNext(template: Contract): ContractRevision = ???
 
-    override def delete(id: Long): Contract = ???
+    /** *
+      * retrieves the next revision after the given one, for the given template
+      * */
+    override def getNext(template: Contract, revision: ContractRevision): ContractRevision = ???
 
-    override def restore(id: Long): Contract = ???
+    /** *
+      * retrieves the previous revision after the current one
+      * */
+    override def getPrevious(template: Contract): ContractRevision = ???
 
-    override def synchronise(entity: Contract): Contract = ???
+    /** *
+      * retrieves the previous revision after the given one, for the given template
+      * */
+    override def getPrevious(template: Contract, revision: ContractRevision): ContractRevision = ???
+
+    /**
+      * restores a previously deleted revision
+      **/
+    override def restore(revision: ContractRevision): ContractRevision = ???
+
+    /** *
+      * resets the head of the template to the specified revision
+      * */
+    override def reset(template: Contract, revision: ContractRevision): ContractRevision = ???
+
+    override def synchronise(entity: ContractRevision): ContractRevision = ???
+
 }
