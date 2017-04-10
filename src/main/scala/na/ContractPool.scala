@@ -94,6 +94,6 @@ object ContractPool {
 
             .+:(ContractRevision(id=9, name = "CTV2", version = 1, contracts.drop(4).head, null))
 
-            .+:(ContractRevision(id=10, name = "CTV10", version = 1, contracts.drop(5).head, null))
+            .+:(ContractRevision(id=10, name = "CTV1", version = 1, contracts.drop(5).head, null))
     }
 }

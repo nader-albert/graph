@@ -42,11 +42,20 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
     override def create(contract: Contract, revision: ContractRevision): ContractRevision = {
         val contractRevision = addRevision(revision)
 
-        "(" + contract.name + ")" + "-[:" + RelTypes.HAS_A + "]->" + "(" + contractRevision + ")"
+        //"(" + contract.name + ")" + "-[:" + RelTypes.HAS_A + "]->" + "(" + contractRevision + ")"
+
+       // MATCH (u:User {username:'admin'}), (r:Role {name:'ROLE_WEB_USER'})
+       // CREATE (u)-[:HAS_ROLE]->(r)
+
+        //MATCH (contract: Contract_Template {name:'CT1'}), (revision:Contract_Revision {name:'CTV1'})
+        // CREATE (contract)-[r:HAS_A]->(revision)
 
         executeInTransaction {
-            ("CREATE ({contract})-[:{relation}->({revision}))",
-                parameters("contract", contract.name, "relation", RelTypes.HAS_A, "revision", contractRevision.name))
+            (
+                "MATCH (contract:" + contract.typeName + " {name:'CT1'}), (revision:" + ContractRevision.typeName + "{name:'CTV1'}) " +
+
+                "CREATE (contract)-[r:" + RelTypes.HAS_A.name() + "]->(revision)",
+                parameters("contractType", contract.typeName))
         }
 
         contractRevision

@@ -26,7 +26,7 @@ object Runner extends App {
 
     //new Driver
 
-    //ContractPool.randomContracts.foreach{ContractRepository.create}
+    ContractPool.randomContracts.foreach{ContractRepository.create}
 
     randomContractRevisionsFor(randomContracts).foreach(revision => ContractRepository.create(revision.contract, revision))
 
