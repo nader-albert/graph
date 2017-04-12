@@ -8,11 +8,12 @@ import org.neo4j.driver.v1.Values.parameters
 object ContractPackageRepository extends RelationalRepository[ContractPackageRevision] with GraphRepository[ContractPackage, ContractPackageRevision]{
 
     override val templateAlias = "package"
+    override val reversionAlias = "pkRevision"
 
     /**
       * creates a new template from the specified type
       **/
-    override def add(templatePackage: ContractPackage): ContractPackage = {
+    override def add(templatePackage: ContractPackage): Unit = {
         val alias = templatePackage.name
         val contractPackageLabel = templatePackage.typeName
         val packageId = "uuid: {uuid}"
@@ -22,14 +23,12 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
             ("CREATE (" + alias + ":" + contractPackageLabel + " {" + packageId + ", " + packageName + "})"
                 , parameters("uuid", templatePackage.uuid.toString , "name", templatePackage.name) )
         }
-
-        templatePackage
     }
 
     /**
       * creates a new template from the specified type
       **/
-    override def add(revision: ContractPackageRevision): ContractPackageRevision = {
+    override def add(revision: ContractPackageRevision): Unit = {
         val alias = revision.name
         val revisionLabel = ContractPackageRevision.typeName
         val contractId = "uuid: {uuid}"
@@ -42,8 +41,6 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
                     "uuid", revision.uuid.toString ,
                     "name", revision.name) )
         }
-
-        revision
     }
 
     /**
@@ -56,8 +53,8 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
                 parameters(
                     "contractName", templatePackage.name,
                     "contractUuid", templatePackage.uuid.toString,
-                    "revisionUuid", revision.uuid.toString,
-                    "revisionName", revision.name))
+                    "pkRevisionUuid", revision.uuid.toString,
+                    "pkRevisionName", revision.name))
         }
 
         revision
@@ -68,7 +65,7 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
     def one(contract :ContractPackage): String = "(" + templateAlias + ":" + contract.typeName + "{name:{contractName}, uuid:{contractUuid} } )"
 
     def one(contractRevision: ContractPackageRevision): String =
-        "(" + reversionAlias + ":" + ContractPackageRevision.typeName + "{name:{revisionName}, uuid:{revisionUuid} } )"
+        "(" + reversionAlias + ":" + ContractPackageRevision.typeName + "{name:{pkRevisionName}, uuid:{pkRevisionUuid} } )"
 
     def link(connectionName: String): String = "(" + templateAlias + ")-[r:" + connectionName + "]->(" + reversionAlias + ")"
 

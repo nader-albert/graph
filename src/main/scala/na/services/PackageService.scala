@@ -5,9 +5,7 @@ import na.repositories.packages.ContractPackageRepository
 
 class PackageService extends TemplateService[ContractPackage] with VersioningService[ContractPackage, ContractPackageRevision] {
 
-  override def add(template: ContractPackage): ContractPackage = {
-    ContractPackageRepository.add(template)
-  }
+  override def add(template: ContractPackage): Unit = ContractPackageRepository.add(template)
 
   override def getOne(template: ContractPackage): ContractPackage = ???
 
@@ -18,7 +16,7 @@ class PackageService extends TemplateService[ContractPackage] with VersioningSer
   /**
     * adds a new revision to the given template, and advances the current version to the given one
     **/
-  override def addRevision(revision: ContractPackageRevision): ContractPackageRevision = {
+  override def addRevision(revision: ContractPackageRevision): Unit = {
       ContractPackageRepository.add(revision)
       ContractPackageRepository.attach(revision.contractPackage, revision)
   }

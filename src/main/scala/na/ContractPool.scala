@@ -76,25 +76,28 @@ object ContractPool {
             .+:(Contract(uuid = 10,name = "CT10"))
     }
 
-    def randomContractRevisionsFor(contracts: Seq[Contract]): Seq[ContractRevision] = {
+    /**
+      * creates contracts with associated revisions linked to package revisions
+      * */
+    def randomContractRevisionsFor(contracts: Seq[Contract], contractPackageRevisions: Seq[ContractPackageRevision]): Seq[ContractRevision] = {
         val contractRevisions = Seq.empty[ContractRevision]
 
         contractRevisions
-            .+:(ContractRevision(uuid = 1, name = "CTV1", version = 1, contracts.head))
-            .+:(ContractRevision(uuid = 2, name = "CTV2", version = 2, contracts.head))
+            .+:(ContractRevision(uuid = 1, name = "CTV1", version = 1, contracts.head, contractPackageRevisions.head))
+            .+:(ContractRevision(uuid = 2, name = "CTV2", version = 2, contracts.head, contractPackageRevisions.head))
 
-            .+:(ContractRevision(uuid = 3, name = "CTV1", version = 1, contracts.drop(1).head))
-            .+:(ContractRevision(uuid = 4, name = "CTV2", version = 2, contracts.drop(1).head))
+            .+:(ContractRevision(uuid = 3, name = "CTV1", version = 1, contracts.drop(1).head, contractPackageRevisions.drop(1).head))
+            .+:(ContractRevision(uuid = 4, name = "CTV2", version = 2, contracts.drop(1).head, contractPackageRevisions.drop(8).head))
 
-            .+:(ContractRevision(uuid = 5, name = "CTV1", version = 1, contracts.drop(2).head))
-            .+:(ContractRevision(uuid = 6, name = "CTV2", version = 2, contracts.drop(2).head))
-            .+:(ContractRevision(uuid = 7, name = "CTV3", version = 3, contracts.drop(2).head))
+            .+:(ContractRevision(uuid = 5, name = "CTV1", version = 1, contracts.drop(2).head, contractPackageRevisions.drop(2).head))
+            .+:(ContractRevision(uuid = 6, name = "CTV2", version = 2, contracts.drop(2).head, contractPackageRevisions.drop(6).head))
+            .+:(ContractRevision(uuid = 7, name = "CTV3", version = 3, contracts.drop(2).head, contractPackageRevisions.drop(7).head))
 
-            .+:(ContractRevision(uuid = 8, name = "CTV1", version = 1, contracts.drop(3).head))
+            .+:(ContractRevision(uuid = 8, name = "CTV1", version = 1, contracts.drop(3).head, contractPackageRevisions.drop(3).head))
 
-            .+:(ContractRevision(uuid = 9, name = "CTV2", version = 1, contracts.drop(4).head))
+            .+:(ContractRevision(uuid = 9, name = "CTV2", version = 1, contracts.drop(4).head, contractPackageRevisions.drop(4).head))
 
-            .+:(ContractRevision(uuid = 10, name = "CTV1", version = 1, contracts.drop(5).head))
+            .+:(ContractRevision(uuid = 10, name = "CTV1", version = 1, contracts.drop(5).head, contractPackageRevisions.drop(5).head))
     }
 
     def randomContractPackages: Seq[ContractPackage] = {

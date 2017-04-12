@@ -2,7 +2,7 @@ package na.services
 
 trait TemplateService [T] {
 
-    def add(template: T): T
+    def add(template: T): Unit
 
     def getOne(template: T): T
 

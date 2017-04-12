@@ -7,7 +7,7 @@ trait VersioningService[A <: Template, B <: Entity with Versioned] {
   /**
     * adds a new revision to the given template, and advances the current version to the given one
     * */
-    def addRevision(revision: B): B
+    def addRevision(revision: B): Unit
 
     /**
       * retrieves the latest revision associated with the given template

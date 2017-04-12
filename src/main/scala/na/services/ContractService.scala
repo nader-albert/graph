@@ -1,11 +1,11 @@
 package na.services
 
-import na.models.contracts.{ContractRevision, Contract}
+import na.models.contracts.{Contract, ContractRevision}
 import na.repositories.contracts.ContractRepository
 
 class ContractService extends TemplateService[Contract] with VersioningService[Contract, ContractRevision]{
 
-    override def add(entity: Contract): Contract = {
+    override def add(entity: Contract): Unit = {
         ContractRepository.add(entity)
     }
 
@@ -55,9 +55,14 @@ class ContractService extends TemplateService[Contract] with VersioningService[C
       * adds a new revision to the given template, and advances the current version to the given one
       * //TODO: should be done in one transaction
       **/
-    override def addRevision(revision: ContractRevision): ContractRevision = {
+    override def addRevision(revision: ContractRevision): Unit = {
         ContractRepository.add(revision)
+
         ContractRepository.attach(revision.contract, revision)
+    }
+
+    def addPackage(revision: ContractRevision): Unit = {
+        revision.documentsPackage.foreach(ContractRepository.attach(revision,_))
     }
 
     /** *

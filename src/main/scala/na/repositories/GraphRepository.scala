@@ -8,7 +8,7 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
 
     protected val templateAlias: String
 
-    protected val reversionAlias = "revision"
+    val reversionAlias: String
 
     //provides basic information concerning the underlying graph data structure and the required access points to it (encloses a graph driver, maybe ?!)
     //provides core graph database access APIs
@@ -16,12 +16,12 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
     /**
       * creates a new template from the specified type
       * */
-    def add(template: A): A
+    def add(template: A): Unit
 
     /**
       * creates a new template from the specified type
       * */
-    def add(revision: B): B
+    def add(revision: B): Unit
 
     /**
       * creates a new version and link it with the given template
@@ -51,7 +51,7 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
     protected def CREATE(statement: => String): String = "CREATE" + statement
 
     implicit class StringExt(leftSide: String) {
-        def and (rightSide: String): String = leftSide + ", " + rightSide
+        def and(rightSide: String): String = leftSide + ", " + rightSide
 
         def andThen(rightSide: String): String = leftSide + " " + rightSide
     }

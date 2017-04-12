@@ -5,6 +5,8 @@ import java.io.File
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import na.services.{ContractService, PackageService}
 import ContractPool._
+import na.models.contracts.ContractRevision
+import na.models.packages.ContractPackageRevision
 
 object Runner extends App {
 
@@ -17,11 +19,53 @@ object Runner extends App {
     //runEmbedded
 
     private def remote = {
-        println("creating contracts......")
-        createContracts()
-
         println("creating contract packages......")
-        createContractPackages()
+        val contractPackageRevisions = createContractPackages()
+
+        println("creating contracts......")
+        val contractRevisions = createContracts(contractPackageRevisions)
+
+        println("linking contracts to packages......")
+        linkContractToPackages(contractRevisions)
+
+        //println("creating package documents .........")
+
+        //println("linking packages to documents .........")
+
+    }
+
+    /**
+      * creates contracts with associated revisions linked to package revisions
+      * */
+    private def createContracts(contractPackageRevisions: Seq[ContractPackageRevision]): Seq[ContractRevision] = {
+        val contracts = ContractPool.randomContracts
+
+        contracts.foreach{contractService.add}
+
+        val revisions = randomContractRevisionsFor(contracts, contractPackageRevisions)
+
+        revisions.foreach(revision => contractService.addRevision(revision))
+
+        revisions
+    }
+
+    /**
+      * creates packages with associated revisions
+      * */
+    private def createContractPackages(): Seq[ContractPackageRevision] = {
+        val contractPackages = ContractPool.randomContractPackages
+
+        contractPackages.foreach(packageService.add)
+
+        val revisions = randomContractPackageRevisionsFor(contractPackages)
+
+        revisions.foreach(revision => packageService.addRevision(revision))
+
+        revisions
+    }
+
+    private def linkContractToPackages(contractRevisions: Seq[ContractRevision]) = {
+        contractRevisions.foreach(contractService.addPackage)
     }
 
     private def embedded() = {
@@ -35,21 +79,6 @@ object Runner extends App {
         graphDb.shutdown
     }
 
-    private def createContracts() = {
-        val contracts = ContractPool.randomContracts
-
-        contracts.foreach{contractService.add}
-
-        randomContractRevisionsFor(contracts).foreach(revision => contractService.addRevision(revision))
-    }
-
-    private def createContractPackages() = {
-        val contractPackages = ContractPool.randomContractPackages
-
-        contractPackages.foreach{packageService.add}
-
-        randomContractPackageRevisionsFor(contractPackages).foreach(revision => packageService.addRevision(revision))
-    }
 
 }
 
