@@ -15,7 +15,7 @@ class PackageService extends TemplateService[Package] with VersioningService[Pac
   /**
     * adds a new revision to the given template, and advances the current version to the given one
     **/
-  override def addRevision(template: Package, revision: PackageRevision): Unit = ???
+  override def addRevision(revision: PackageRevision): PackageRevision = ???
 
   /**
     * retrieves the latest revision associated with the given template

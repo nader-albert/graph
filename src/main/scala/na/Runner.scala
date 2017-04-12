@@ -3,7 +3,6 @@ package na
 import java.io.File
 
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
-import na.models.contracts.Contract
 import na.repositories.contract.ContractRepository
 import na.services.ContractService
 
@@ -11,24 +10,17 @@ import ContractPool._
 
 object Runner extends App {
 
-    val service = new ContractService(Contract(id =1, name = "Template1"))
-
-    //print(pool)
-
-    //print(pool.count)
-
-    //new Driver
+    val contractService = new ContractService
 
     remote
-
     //runEmbedded
 
     private def remote = {
         println("remote is here !")
 
-        ContractPool.randomContracts.foreach{ContractRepository.create}
+        ContractPool.randomContracts.foreach{contractService.add}
 
-        randomContractRevisionsFor(randomContracts).foreach(revision => ContractRepository.create(revision.contract, revision))
+        randomContractRevisionsFor(randomContracts).foreach(revision => contractService.addRevision(revision))
     }
 
     private def embedded = {

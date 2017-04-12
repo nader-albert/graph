@@ -18,16 +18,21 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
     /**
       * creates a new template from the specified type
       * */
-    def create(template: A): A = ???
+    def add(template: A): A = ???
+
+    /**
+      * creates a new template from the specified type
+      * */
+    def add(instance: B): B = ???
 
     /**
       * creates a new version and link it with the given template
       * */
-    def create(template: A, entity: B): B
+    def attach(template: A, entity: B): B
 
     def find(template: A): B = ???
 
-    protected def executeInTransaction(statement: => (String, Value)): Option[StatementResult] = {
+    protected def execute(statement: => (String, Value)): Option[StatementResult] = {
         val session = driver.session
 
         val tx = session.beginTransaction
