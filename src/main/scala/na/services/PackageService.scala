@@ -1,12 +1,15 @@
 package na.services
 
-import na.models.packages.{Package, PackageRevision}
+import na.models.packages.{ContractPackage, ContractPackageRevision}
+import na.repositories.packages.ContractPackageRepository
 
-class PackageService extends TemplateService[Package] with VersioningService[Package, PackageRevision] {
+class PackageService extends TemplateService[ContractPackage] with VersioningService[ContractPackage, ContractPackageRevision] {
 
-  override def add(template: Package): Unit = ???
+  override def add(template: ContractPackage): ContractPackage = {
+    ContractPackageRepository.add(template)
+  }
 
-  override def getOne(template: Package): Package = ???
+  override def getOne(template: ContractPackage): ContractPackage = ???
 
   //override def update(entity: PackageTemplate): Unit = ???
 
@@ -15,37 +18,40 @@ class PackageService extends TemplateService[Package] with VersioningService[Pac
   /**
     * adds a new revision to the given template, and advances the current version to the given one
     **/
-  override def addRevision(revision: PackageRevision): PackageRevision = ???
+  override def addRevision(revision: ContractPackageRevision): ContractPackageRevision = {
+      ContractPackageRepository.add(revision)
+      ContractPackageRepository.attach(revision.contractPackage, revision)
+  }
 
   /**
     * retrieves the latest revision associated with the given template
     **/
-  override def getLatest(template: Package): PackageRevision = ???
+  override def getLatest(template: ContractPackage): ContractPackageRevision = ???
 
   /**
     * retrieves the original revision associated with the given template
     **/
-  override def getOriginal(template: Package): PackageRevision = ???
+  override def getOriginal(template: ContractPackage): ContractPackageRevision = ???
 
   /** *
     * retrieves the next revision after the current one, for the given template
     * */
-  override def getNext(template: Package): PackageRevision = ???
+  override def getNext(template: ContractPackage): ContractPackageRevision = ???
 
   /** *
     * retrieves the next revision after the given one, for the given template
     * */
-  override def getNext(template: Package, revision: PackageRevision): PackageRevision = ???
+  override def getNext(template: ContractPackage, revision: ContractPackageRevision): ContractPackageRevision = ???
 
   /** *
     * retrieves the previous revision after the current one
     * */
-  override def getPrevious(template: Package): PackageRevision = ???
+  override def getPrevious(template: ContractPackage): ContractPackageRevision = ???
 
   /** *
     * retrieves the previous revision after the given one, for the given template
     * */
-  override def getPrevious(template: Package, revision: PackageRevision): PackageRevision = ???
+  override def getPrevious(template: ContractPackage, revision: ContractPackageRevision): ContractPackageRevision = ???
 
   /** *
     * marks a revision as deleted
@@ -55,15 +61,15 @@ class PackageService extends TemplateService[Package] with VersioningService[Pac
   /**
     * restores a previously deleted revision
     **/
-  override def restore(revision: PackageRevision): PackageRevision = ???
+  override def restore(revision: ContractPackageRevision): ContractPackageRevision = ???
 
   /** *
     * resets the head of the template to the specified revision
     * */
-  override def reset(template: Package, revision: PackageRevision): PackageRevision = ???
+  override def reset(template: ContractPackage, revision: ContractPackageRevision): ContractPackageRevision = ???
 
   /** *
     * returns the same version instance with all its composites pushed forward to their latest revisions (HEAD)
     * */
-  override def synchronise(revision: PackageRevision): PackageRevision = ???
+  override def synchronise(revision: ContractPackageRevision): ContractPackageRevision = ???
 }

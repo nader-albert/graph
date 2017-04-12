@@ -2,14 +2,15 @@ package na.models.contracts
 
 import java.time.LocalDateTime
 
+import na.models.packages.ContractPackage
 import na.models.{Candidate, Entity, Versioned}
 
-case class ContractRevision private(override val uuid: Long, override val name: String, override val version: Int, contract: Contract, documentsPackage: Package,
+case class ContractRevision private(override val uuid: Long, override val name: String, override val version: Int, contract: Contract,
+                                    documentsPackage: Option[ContractPackage],
                                     signed: Boolean, signDate: Option[LocalDateTime], signedBy: Option[Candidate],
                                     title: Option[String], description: Option[String])
 
     extends Entity with Versioned {
-
 
 }
 
@@ -21,12 +22,17 @@ object ContractRevision {
       * */
     val typeName = "Contract_Revision"
 
+    /**
+      * */
+    def apply(uuid: Long, name: String, version: Int, contract: Contract): ContractRevision = {
+        ContractRevision(uuid, name, version, contract, None, signed= false, signDate = None, signedBy = None, title = None, description = None)
+    }
 
     /**
       * to be used by graph repositories
       * */
-    def apply(uuid: Long, name: String, version: Int, contract: Contract, documentsPackage: Package): ContractRevision = {
-        ContractRevision(uuid, name, version, contract, documentsPackage, signed= false, signDate = None, signedBy = None, title = None, description = None)
+    def apply(uuid: Long, name: String, version: Int, contract: Contract, contractPackage: ContractPackage): ContractRevision = {
+        ContractRevision(uuid, name, version, contract, Some(contractPackage), signed= false, signDate = None, signedBy = None, title = None, description = None)
     }
 
   /**

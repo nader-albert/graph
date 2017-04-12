@@ -1,12 +1,13 @@
-package na.repositories.contract
+package na.repositories.contracts
 
 import na.models.contracts.{Contract, ContractRevision}
 import na.models.neo4j.RelTypes
-import na.models.packages.PackageRevision
 import na.repositories.{GraphRepository, RelationalRepository}
 import org.neo4j.driver.v1.Values.parameters
 
 object ContractRepository extends RelationalRepository[ContractRevision] with GraphRepository[Contract, ContractRevision] {
+
+    override val templateAlias = "contract"
 
     /*def findInGDM(contract: => Contract): Contract = {
         //model with basic attributes and all relations from graph
@@ -54,26 +55,11 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
     }
 
     override def attach(contract: Contract, revision: ContractRevision): ContractRevision = {
-        /*execute {
-            (
-                "MATCH " +
-                    "(contract:" + contract.typeName + "{name:{contractName}, uuid:{contractUuid} } ) ," +
-                    "(revision:" + ContractRevision.typeName + "{name:{revisionName}, uuid:{revisionUuid} } ) " +
-
-                    "CREATE (contract)-[r:" + RelTypes.HAS_A.name() + "]->(revision)",
-
-                parameters(
-                    "contractName", contract.name,
-                    "contractUuid", contract.uuid.toString,
-                    "revisionUuid", revision.uuid.toString,
-                    "revisionName", revision.name))
-        }*/
-
         execute {
             (
                 MATCH(one(contract) and one(revision))
                     andThen
-                CREATE("(" + contractAlias + ")-[r:" + RelTypes.HAS_A.name() + "]->(" + reversionAlias + ")") ,
+                CREATE(link(RelTypes.HAS_A.name())) ,
 
                 parameters(
                     "contractName", contract.name,
@@ -85,6 +71,8 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
         revision
     }
 
+    override def find(template: Contract): ContractRevision = ???
+
     /***
      // * @param contractRevision, the contract revision required to be connected to a package revision
      // * @param packageRevision, the package revision required to be connected to a contract revision
@@ -93,16 +81,13 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
     //def attach(contractRevision: ContractRevision, packageRevision: PackageRevision): ContractRevision = {
     //}
 
-    def MATCH(statement: => String): String = "MATCH" + statement
-
-    def CREATE(statement: => String): String = "CREATE" + statement
-
-    def one(contract :Contract): String = "(" + contractAlias + ":" + contract.typeName + "{name:{contractName}, uuid:{contractUuid} } )"
+    def one(contract :Contract): String = "(" + templateAlias + ":" + contract.typeName + "{name:{contractName}, uuid:{contractUuid} } )"
 
     def one(contractRevision: ContractRevision): String = "(" + reversionAlias + ":" + ContractRevision.typeName + "{name:{revisionName}, uuid:{revisionUuid} } )"
 
-    val contractAlias = "contract"
-    val reversionAlias = "revision"
+    def link(connectionName: String): String = "(" + templateAlias + ")-[r:" + connectionName + "]->(" + reversionAlias + ")"
+
+
     /**
       * Finds an entity corresponding to the one passed in the parameter. basically
       * */
@@ -112,11 +97,6 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
         }
     }*/
 
-    implicit class StringExt(leftSide: String) {
-        def and (rightSide: String): String = leftSide + ", " + rightSide
-
-        def andThen(rightSide: String): String = leftSide + " " + rightSide
-    }
 }
 
 

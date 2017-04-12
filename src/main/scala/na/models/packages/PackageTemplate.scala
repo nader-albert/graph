@@ -11,5 +11,5 @@ trait PackageTemplate extends Template {
       * the name of a table in the relational model
       * the name of a label in the graph model
       * */
-    val name = "Package_Template"
+    val typeName = "Package_Template"
 }
