@@ -1,5 +1,5 @@
 package na.models
 
-class Candidate(override val id: Long, override val name: String) extends Person {
+class Candidate(override val uuid: Long, override val name: String) extends Person {
 
 }

@@ -1,5 +1,5 @@
 package na.models
 
-class Manager(override val id: Long, override val name: String) extends Person {
+class Manager(override val uuid: Long, override val name: String) extends Person {
 
 }

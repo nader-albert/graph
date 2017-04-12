@@ -1,6 +1,6 @@
 package na.models
 
 trait Entity {
-    val id: Long
+    val uuid: Long
     val name: String
 }

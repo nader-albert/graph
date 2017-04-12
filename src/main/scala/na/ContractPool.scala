@@ -3,7 +3,6 @@ package na
 import na.models.neo4j.RelTypes
 import org.neo4j.graphdb.{GraphDatabaseService, Label, Node, Relationship}
 import Label.label
-import na.models.Document
 import na.models.contracts.{Contract, ContractRevision}
 
 class ContractPool(graphDb: GraphDatabaseService) {
@@ -64,36 +63,36 @@ object ContractPool {
         val contracts = Seq.empty[Contract]
 
         contracts
-            .+:(Contract(id=1, name = "CT1"))
-            .+:(Contract(id=2, name = "CT2"))
-            .+:(Contract(id=3, name = "CT3"))
-            .+:(Contract(id=4, name = "CT4"))
-            .+:(Contract(id=5, name = "CT5"))
-            .+:(Contract(id=6, name = "CT6"))
-            .+:(Contract(id=7, name = "CT7"))
-            .+:(Contract(id=8, name = "CT8"))
-            .+:(Contract(id=9, name = "CT9"))
-            .+:(Contract(id=10,name = "CT10"))
+            .+:(Contract(uuid = 1, name = "CT1"))
+            .+:(Contract(uuid = 2, name = "CT2"))
+            .+:(Contract(uuid = 3, name = "CT3"))
+            .+:(Contract(uuid = 4, name = "CT4"))
+            .+:(Contract(uuid = 5, name = "CT5"))
+            .+:(Contract(uuid = 6, name = "CT6"))
+            .+:(Contract(uuid = 7, name = "CT7"))
+            .+:(Contract(uuid = 8, name = "CT8"))
+            .+:(Contract(uuid = 9, name = "CT9"))
+            .+:(Contract(uuid = 10,name = "CT10"))
     }
 
     def randomContractRevisionsFor(contracts: Seq[Contract]): Seq[ContractRevision] = {
         val contractRevisions = Seq.empty[ContractRevision]
 
         contractRevisions
-            .+:(ContractRevision(id=1, name = "CTV1", version = 1, contracts.head, null))
-            .+:(ContractRevision(id=2, name = "CTV2", version = 2, contracts.head, null))
+            .+:(ContractRevision(uuid = 1, name = "CTV1", version = 1, contracts.head, null))
+            .+:(ContractRevision(uuid = 2, name = "CTV2", version = 2, contracts.head, null))
 
-            .+:(ContractRevision(id=3, name = "CTV1", version = 1, contracts.drop(1).head, null))
-            .+:(ContractRevision(id=4, name = "CTV2", version = 2, contracts.drop(1).head, null))
+            .+:(ContractRevision(uuid = 3, name = "CTV1", version = 1, contracts.drop(1).head, null))
+            .+:(ContractRevision(uuid = 4, name = "CTV2", version = 2, contracts.drop(1).head, null))
 
-            .+:(ContractRevision(id=5, name = "CTV1", version = 1, contracts.drop(2).head, null))
-            .+:(ContractRevision(id=6, name = "CTV2", version = 2, contracts.drop(2).head, null))
-            .+:(ContractRevision(id=7, name = "CTV3", version = 3, contracts.drop(2).head, null))
+            .+:(ContractRevision(uuid = 5, name = "CTV1", version = 1, contracts.drop(2).head, null))
+            .+:(ContractRevision(uuid = 6, name = "CTV2", version = 2, contracts.drop(2).head, null))
+            .+:(ContractRevision(uuid = 7, name = "CTV3", version = 3, contracts.drop(2).head, null))
 
-            .+:(ContractRevision(id=8, name = "CTV1", version = 1, contracts.drop(3).head, null))
+            .+:(ContractRevision(uuid = 8, name = "CTV1", version = 1, contracts.drop(3).head, null))
 
-            .+:(ContractRevision(id=9, name = "CTV2", version = 1, contracts.drop(4).head, null))
+            .+:(ContractRevision(uuid = 9, name = "CTV2", version = 1, contracts.drop(4).head, null))
 
-            .+:(ContractRevision(id=10, name = "CTV1", version = 1, contracts.drop(5).head, null))
+            .+:(ContractRevision(uuid = 10, name = "CTV1", version = 1, contracts.drop(5).head, null))
     }
 }

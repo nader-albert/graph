@@ -1,3 +1,3 @@
 package na.models.packages
 
-case class Package(override val id: Long, override val name: String) extends PackageTemplate
+case class Package(override val uuid: Long, override val name: String) extends PackageTemplate

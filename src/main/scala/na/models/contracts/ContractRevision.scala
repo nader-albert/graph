@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import na.models.{Candidate, Entity, Versioned}
 
-case class ContractRevision private(override val id: Long, override val name: String, override val version: Int, contract: Contract, documentsPackage: Package,
+case class ContractRevision private(override val uuid: Long, override val name: String, override val version: Int, contract: Contract, documentsPackage: Package,
                                     signed: Boolean, signDate: Option[LocalDateTime], signedBy: Option[Candidate],
                                     title: Option[String], description: Option[String])
 
@@ -25,8 +25,8 @@ object ContractRevision {
     /**
       * to be used by graph repositories
       * */
-    def apply(id: Long, name: String, version: Int, contract: Contract, documentsPackage: Package): ContractRevision = {
-        ContractRevision(id, name, version, contract, documentsPackage, signed= false, signDate = None, signedBy = None, title = None, description = None)
+    def apply(uuid: Long, name: String, version: Int, contract: Contract, documentsPackage: Package): ContractRevision = {
+        ContractRevision(uuid, name, version, contract, documentsPackage, signed= false, signDate = None, signedBy = None, title = None, description = None)
     }
 
   /**

@@ -23,14 +23,14 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
     override def create(contract: Contract): Contract = {
         val alias = contract.name
         val contractLabel = contract.typeName
-        val contractId = "id: {id}"
+        val contractId = "uuid: {uuid}"
         val contractName = "name: {name}"
 
         //"CREATE (a:Person {name: {name}, title: {title}})", parameters("name", "Arthur", "title", "King")
 
         executeInTransaction {
-            ("CREATE (" + alias + ":" + contractLabel + " {" + contractId + ", " + contractName + " })"
-                , parameters("id", contract.id.toString , "name", contract.name) )
+            ("CREATE (" + alias + ":" + contractLabel + " {" + contractId + ", " + contractName + "})"
+                , parameters("uuid", contract.uuid.toString , "name", contract.name) )
         }
 
         contract
@@ -52,10 +52,17 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
 
         executeInTransaction {
             (
-                "MATCH (contract:" + contract.typeName + " {name:'CT1'}), (revision:" + ContractRevision.typeName + "{name:'CTV1'}) " +
+                "MATCH " +
+                    "(contract:" + contract.typeName + "{name:{contractName}, uuid:{contractUuid} } ) ," +
+                    "(revision:" + ContractRevision.typeName + "{name:{revisionName}, uuid:{revisionUuid} } ) " +
 
                 "CREATE (contract)-[r:" + RelTypes.HAS_A.name() + "]->(revision)",
-                parameters("contractType", contract.typeName))
+
+                parameters(
+                    "contractName", contract.name,
+                    "contractUuid", contract.uuid.toString,
+                    "revisionUuid", revision.uuid.toString,
+                    "revisionName", revision.name))
         }
 
         contractRevision
@@ -64,13 +71,13 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
     private def addRevision(revision: ContractRevision): ContractRevision = {
         val alias = revision.name
         val revisionLabel = ContractRevision.typeName
-        val contractId = "id: {id}"
+        val contractId = "uuid: {uuid}"
         val contractName = "name: {name}"
 
         //create revision
         executeInTransaction {
             ("CREATE (" + alias + ":" + revisionLabel + " {" + contractId + ", " + contractName + " })"
-                , parameters("id", revision.id.toString , "name", revision.name) )
+                , parameters("uuid", revision.uuid.toString , "name", revision.name) )
         }
 
         revision
