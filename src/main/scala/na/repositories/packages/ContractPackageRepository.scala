@@ -67,7 +67,8 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
 
     def one(contract :ContractPackage): String = "(" + templateAlias + ":" + contract.typeName + "{name:{contractName}, uuid:{contractUuid} } )"
 
-    def one(contractRevision: ContractPackageRevision): String = "(" + reversionAlias + ":" + ContractPackageRevision.typeName + "{name:{revisionName}, uuid:{revisionUuid} } )"
+    def one(contractRevision: ContractPackageRevision): String =
+        "(" + reversionAlias + ":" + ContractPackageRevision.typeName + "{name:{revisionName}, uuid:{revisionUuid} } )"
 
     def link(connectionName: String): String = "(" + templateAlias + ")-[r:" + connectionName + "]->(" + reversionAlias + ")"
 
