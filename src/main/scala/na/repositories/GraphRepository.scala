@@ -6,10 +6,6 @@ import org.neo4j.driver.v1.{StatementResult, Value}
 
 trait GraphRepository[A <: Template, B <: Entity with Versioned] {
 
-    protected val templateAlias: String
-
-    val reversionAlias: String
-
     //provides basic information concerning the underlying graph data structure and the required access points to it (encloses a graph driver, maybe ?!)
     //provides core graph database access APIs
 
@@ -49,6 +45,10 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
     protected def MATCH(statement: => String): String = "MATCH" + statement
 
     protected def CREATE(statement: => String): String = "CREATE" + statement
+
+    def link(left: String, to: String, right: String): String =
+        "(%s)-[r:%s]->(%s)"
+            .format(left, to, right)
 
     implicit class StringExt(leftSide: String) {
         def and(rightSide: String): String = leftSide + ", " + rightSide

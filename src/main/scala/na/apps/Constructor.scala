@@ -1,14 +1,15 @@
-package na
+package na.apps
 
 import java.io.File
 
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import na.services.{ContractService, PackageService}
-import ContractPool._
+import na.ContractPool._
+import na.ContractPool
 import na.models.contracts.ContractRevision
 import na.models.packages.ContractPackageRevision
 
-object Runner extends App {
+object Constructor extends App {
 
     val contractService = new ContractService
     val packageService = new PackageService
@@ -38,7 +39,7 @@ object Runner extends App {
       * creates contracts with associated revisions linked to package revisions
       * */
     private def createContracts(contractPackageRevisions: Seq[ContractPackageRevision]): Seq[ContractRevision] = {
-        val contracts = ContractPool.randomContracts
+        val contracts = randomContracts
 
         contracts.foreach{contractService.add}
 
@@ -53,7 +54,7 @@ object Runner extends App {
       * creates packages with associated revisions
       * */
     private def createContractPackages(): Seq[ContractPackageRevision] = {
-        val contractPackages = ContractPool.randomContractPackages
+        val contractPackages = randomContractPackages
 
         contractPackages.foreach(packageService.add)
 

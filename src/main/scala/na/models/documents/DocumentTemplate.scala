@@ -1,11 +1,12 @@
-package na.models.contracts
+package na.models.documents
 
 import na.models.Template
+
 
 /***
   * in relational model, where contract templates are supposed to be enlisted
   * in graph model, this represents a label, that should be assigned to all contract template nodes
   * */
-trait ContractTemplate extends Template {
+trait DocumentTemplate extends Template {
 
 }

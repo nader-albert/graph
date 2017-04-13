@@ -9,9 +9,6 @@ import org.neo4j.driver.v1.Values.parameters
 
 object ContractRepository extends RelationalRepository[ContractRevision] with GraphRepository[Contract, ContractRevision] {
 
-    override val templateAlias = "contract"
-    override val reversionAlias = "ctRevision"
-
     /*def findInGDM(contract: => Contract): Contract = {
         //model with basic attributes and all relations from graph
        // find
@@ -26,7 +23,7 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
       * */
     override def add(contract: Contract): Unit = {
         val alias = contract.name
-        val contractLabel = contract.typeName
+        val contractLabel = Contract.label
         val contractId = "uuid: {uuid}"
         val contractName = "name: {name}"
 
@@ -41,7 +38,7 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
       * */
     override def add(revision: ContractRevision): Unit = {
         val alias = revision.name
-        val revisionLabel = ContractRevision.typeName
+        val revisionLabel = ContractRevision.label
         val contractId = "uuid: {uuid}"
         val contractName = "name: {name}"
 
@@ -59,7 +56,7 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
             (
                 MATCH(one(contract) and one(revision))
                     andThen
-                CREATE(link(templateAlias, RelTypes.HAS_A.name(), reversionAlias)) ,
+                CREATE(link(Contract.alias, RelTypes.HAS_A.name(), ContractRevision.alias)) ,
 
                 parameters(
                     "contractName", contract.name,
@@ -77,13 +74,11 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
      * @return a contract revision linked to the given package revision
      * */
     def attach(contractRevision: ContractRevision, contractPackageRevision: ContractPackageRevision): Unit = {
-        val contractPackageRevisionAlias = ContractPackageRepository.reversionAlias
-
         execute {
             (
                 MATCH(one(contractRevision) and ContractPackageRepository.one(contractPackageRevision))
                     andThen
-                CREATE(link(reversionAlias, RelTypes.CONTAINS_A.name(), contractPackageRevisionAlias))
+                CREATE(link(ContractRevision.alias, RelTypes.CONTAINS_A.name(), ContractPackageRevision.alias))
                 ,
                 parameters(
                     "ctRevisionName", contractRevision.name,
@@ -96,12 +91,13 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
 
     override def find(template: Contract): ContractRevision = ???
 
-    def one(contract :Contract): String = "(" + templateAlias + ":" + contract.typeName + "{name:{contractName}, uuid:{contractUuid} } )"
+    def one(contract :Contract): String =
+        "(%s:%s {name:{contractName}, uuid:{contractUuid} } )"
+            .format (Contract.alias, Contract.label)
 
     def one(contractRevision: ContractRevision): String =
-        "(" + reversionAlias + ":" + ContractRevision.typeName + "{name:{ctRevisionName}, uuid:{ctRevisionUuid} } )"
-
-    def link(left: String, to: String, right: String): String = "(%s)-[r:%s]->(%s)" format(left, to, right)
+        "(%s:%s {name:{ctRevisionName}, uuid:{ctRevisionUuid} } )"
+            .format(ContractRevision.alias, ContractRevision.label)
 
 }
 

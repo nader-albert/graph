@@ -20,7 +20,7 @@ object SectionRevision {
       * the name of a table in the relational model
       * the name of a label in the graph model
       * */
-    val typeName = "Section_Revision"
+    val label = "Section_Revision"
 
     /**
       * */
