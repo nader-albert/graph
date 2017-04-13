@@ -1,7 +1,9 @@
 package na.repositories.packages
 
+import na.models.documents.DocumentRevision
 import na.models.neo4j.RelTypes
 import na.models.packages.{ContractPackage, ContractPackageRevision}
+import na.repositories.documents.DocumentRepository
 import na.repositories.{GraphRepository, RelationalRepository}
 import org.neo4j.driver.v1.Values.parameters
 
@@ -52,8 +54,8 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
                 CREATE(link(ContractPackage.alias, RelTypes.HAS_A.name(), ContractPackageRevision.alias)),
 
                 parameters(
-                    "contractName", templatePackage.name,
-                    "contractUuid", templatePackage.uuid.toString,
+                    "packageName", templatePackage.name,
+                    "packageUuid", templatePackage.uuid.toString,
                     "pkRevisionUuid", revision.uuid.toString,
                     "pkRevisionName", revision.name))
         }
@@ -61,10 +63,31 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
         revision
     }
 
+    /***
+      * @param contractPackageRevision, the package revision required to be connected to a document revision
+      * @param documentRevision, the document revision required to be connected to a package revision
+      * @return a contract revision linked to the given package revision
+      * */
+    def attach(contractPackageRevision: ContractPackageRevision, documentRevision: DocumentRevision): Unit = {
+        execute {
+            (
+                MATCH(one(contractPackageRevision) and DocumentRepository.one(documentRevision))
+                    andThen
+                CREATE(link(ContractPackageRevision.alias, RelTypes.CONTAINS_A.name(), DocumentRevision.alias))
+                ,
+                parameters(
+                    "pkRevisionName", contractPackageRevision.name,
+                    "pkRevisionUuid", contractPackageRevision.uuid.toString,
+                    "dcRevisionName", documentRevision.name,
+                    "dcRevisionUuid", documentRevision.uuid.toString)
+            )
+        }
+    }
+
     override def find(template: ContractPackage): ContractPackageRevision = ???
 
     def one(contract :ContractPackage): String =
-        "(%s:%s {name:{contractName}, uuid:{contractUuid} } )"
+        "(%s:%s {name:{packageName}, uuid:{packageUuid} } )"
             .format(ContractPackage.alias, ContractPackage.label)
 
     def one(contractRevision: ContractPackageRevision): String =

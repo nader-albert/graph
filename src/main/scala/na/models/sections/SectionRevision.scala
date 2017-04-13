@@ -21,6 +21,7 @@ object SectionRevision {
       * the name of a label in the graph model
       * */
     val label = "Section_Revision"
+    val alias = "scRevision"
 
     /**
       * */

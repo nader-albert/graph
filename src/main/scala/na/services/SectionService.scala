@@ -1,17 +1,24 @@
 package na.services
 
+import na.models.documents.DocumentRevision
+import na.models.packages.ContractPackageRevision
 import na.models.sections.{Section, SectionRevision}
+import na.repositories.packages.ContractPackageRepository
+import na.repositories.sections.SectionRepository
 
 class SectionService  extends TemplateService[Section] with VersioningService[Section, SectionRevision] {
 
-    override def add(template: Section): Unit = ???
+    override def add(template: Section): Unit = SectionRepository.add(template)
 
     override def getOne(template: Section): Section = ???
 
     /**
       * adds a new revision to the given template, and advances the current version to the given one
       **/
-    override def addRevision(revision: SectionRevision): Unit = ???
+    override def addRevision(revision: SectionRevision): Unit = {
+        SectionRepository.add(revision)
+        SectionRepository.attach(revision.section, revision)
+    }
 
     /**
       * retrieves the latest revision associated with the given template

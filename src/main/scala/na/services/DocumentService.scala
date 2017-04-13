@@ -1,17 +1,25 @@
 package na.services
 
 import na.models.documents.{Document, DocumentRevision}
+import na.repositories.documents.DocumentRepository
 
 class DocumentService extends TemplateService[Document] with VersioningService[Document, DocumentRevision] {
 
-    override def add(template: Document): Unit = ???
+    override def add(template: Document): Unit = DocumentRepository.add(template)
 
     override def getOne(template: Document): Document = ???
 
     /**
       * adds a new revision to the given template, and advances the current version to the given one
       **/
-    override def addRevision(revision: DocumentRevision): Unit = ???
+    override def addRevision(revision: DocumentRevision): Unit = {
+        DocumentRepository.add(revision)
+        DocumentRepository.attach(revision.document, revision)
+    }
+
+    def addSections(revision: DocumentRevision): Unit = {
+        revision.sections.foreach(DocumentRepository.attach(revision,_))
+    }
 
     /**
       * retrieves the latest revision associated with the given template
@@ -57,6 +65,5 @@ class DocumentService extends TemplateService[Document] with VersioningService[D
       * returns the same version instance with all its composites pushed forward to their latest revisions (HEAD)
       * */
     override def synchronise(revision: DocumentRevision): DocumentRevision = ???
-}
 
 }

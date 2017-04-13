@@ -44,7 +44,7 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
 
     protected def MATCH(statement: => String): String = "MATCH" + statement
 
-    protected def CREATE(statement: => String): String = "CREATE" + statement
+    protected def CREATE(statement: => String): String = "CREATE (%s)".format(statement)
 
     def link(left: String, to: String, right: String): String =
         "(%s)-[r:%s]->(%s)"

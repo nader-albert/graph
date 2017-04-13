@@ -29,4 +29,8 @@ object DocumentRevision {
     def apply(uuid: Long, name: String, version: Int, document: Document): DocumentRevision = {
         DocumentRevision(uuid, name, version, document, Seq.empty[SectionRevision], None, None)
     }
+
+    def apply(uuid: Long, name: String, version: Int, document: Document, sections: Seq[SectionRevision]): DocumentRevision = {
+        DocumentRevision(uuid, name, version, document, sections, None, None)
+    }
 }

@@ -1,5 +1,6 @@
 package na.services
 
+import na.models.contracts.ContractRevision
 import na.models.packages.{ContractPackage, ContractPackageRevision}
 import na.repositories.packages.ContractPackageRepository
 
@@ -19,6 +20,10 @@ class PackageService extends TemplateService[ContractPackage] with VersioningSer
   override def addRevision(revision: ContractPackageRevision): Unit = {
       ContractPackageRepository.add(revision)
       ContractPackageRepository.attach(revision.contractPackage, revision)
+  }
+
+  def addDocuments(revision: ContractPackageRevision): Unit = {
+    revision.documents.foreach(ContractPackageRepository.attach(revision,_))
   }
 
   /**
