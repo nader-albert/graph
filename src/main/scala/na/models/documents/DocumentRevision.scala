@@ -2,14 +2,14 @@ package na.models.documents
 
 import java.time.LocalDateTime
 
-import na.models.sections.Section
+import na.models.sections.SectionRevision
 import na.models.{Entity, Person, Versioned}
 
 case class DocumentRevision private(override val uuid: Long,
                                     override val name: String,
                                     override val version: Int,
                                     document: Document,
-                                    sections: Seq[Section],
+                                    sections: Seq[SectionRevision],
                                     createdAt: Option[LocalDateTime], createdBy: Option[Person])
 
     extends Entity with Versioned {
@@ -26,6 +26,6 @@ object DocumentRevision {
     /**
       * */
     def apply(uuid: Long, name: String, version: Int, document: Document): DocumentRevision = {
-        DocumentRevision(uuid, name, version, document, Seq.empty[Section], None, None)
+        DocumentRevision(uuid, name, version, document, Seq.empty[SectionRevision], None, None)
     }
 }
