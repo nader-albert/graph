@@ -23,7 +23,7 @@ class SectionService  extends TemplateService[Section] with VersioningService[Se
     /**
       * retrieves the latest revision associated with the given template
       **/
-    override def getLatest(template: Section): SectionRevision = ???
+    override def getLatest(template: Section): Option[SectionRevision] = ???
 
     /**
       * retrieves the original revision associated with the given template

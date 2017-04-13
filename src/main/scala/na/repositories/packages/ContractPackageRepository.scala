@@ -51,7 +51,7 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
             (
                 MATCH(one(templatePackage) and one(revision))
                     andThen
-                CREATE(link(ContractPackage.alias, RelTypes.HAS_A.name(), ContractPackageRevision.alias)),
+                CREATE(leftLink(ContractPackage.alias, RelTypes.HAS_A.name(), ContractPackageRevision.alias)),
 
                 parameters(
                     "packageName", templatePackage.name,
@@ -73,7 +73,7 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
             (
                 MATCH(one(contractPackageRevision) and DocumentRepository.one(documentRevision))
                     andThen
-                CREATE(link(ContractPackageRevision.alias, RelTypes.CONTAINS_A.name(), DocumentRevision.alias))
+                CREATE(leftLink(ContractPackageRevision.alias, RelTypes.CONTAINS_A.name(), DocumentRevision.alias))
                 ,
                 parameters(
                     "pkRevisionName", contractPackageRevision.name,
@@ -84,8 +84,6 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
         }
     }
 
-    override def find(template: ContractPackage): ContractPackageRevision = ???
-
     def one(contract :ContractPackage): String =
         "(%s:%s {name:{packageName}, uuid:{packageUuid} } )"
             .format(ContractPackage.alias, ContractPackage.label)
@@ -94,4 +92,9 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
         "(%s:%s {name:{pkRevisionName}, uuid:{pkRevisionUuid} } )"
             .format(ContractPackageRevision.alias, ContractPackageRevision.label)
 
+    override def attach(previousRevision: ContractPackageRevision, nextRevision: ContractPackageRevision): ContractPackageRevision = ???
+
+    override def find(template: ContractPackage, connectionName: String): Option[ContractPackageRevision] = ???
+
+    override def find(currentRevision: ContractPackageRevision, connectionName: String): Option[ContractPackageRevision] = ???
 }

@@ -12,7 +12,7 @@ trait VersioningService[A <: Template, B <: Entity with Versioned] {
     /**
       * retrieves the latest revision associated with the given template
       * */
-    def getLatest(template: A): B
+    def getLatest(template: A): Option[B]
 
     /**
       * retrieves the original revision associated with the given template

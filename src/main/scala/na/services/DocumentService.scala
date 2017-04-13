@@ -24,7 +24,7 @@ class DocumentService extends TemplateService[Document] with VersioningService[D
     /**
       * retrieves the latest revision associated with the given template
       **/
-    override def getLatest(template: Document): DocumentRevision = ???
+    override def getLatest(template: Document): Option[DocumentRevision] = ???
 
     /**
       * retrieves the original revision associated with the given template

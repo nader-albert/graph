@@ -29,6 +29,10 @@ object ContractRevision {
         ContractRevision(uuid, name, version, contract, None, signed= false, signDate = None, signedBy = None, title = None, description = None)
     }*/
 
+    def apply(uuid: Long, name: String, contract: Contract): ContractRevision = {
+        ContractRevision(uuid, name, 0, contract, None, signed = false, signDate = None, signedBy = None, title = None, description = None)
+    }
+
     /**
       * to be used by graph repositories
       * */

@@ -43,7 +43,7 @@ object SectionRepository extends RelationalRepository[SectionRevision] with Grap
             (
                 MATCH(one(section) and one(revision))
                     andThen
-                CREATE(link(Section.alias, RelTypes.HAS_A.name(), SectionRevision.alias)),
+                CREATE(leftLink(Section.alias, RelTypes.HAS_A.name(), SectionRevision.alias)),
 
                 parameters(
                     "sectionName", section.name,
@@ -65,5 +65,9 @@ object SectionRepository extends RelationalRepository[SectionRevision] with Grap
         "(%s:%s {name:{scRevisionName}, uuid:{scRevisionUuid} } )"
             .format(SectionRevision.alias, SectionRevision.label)
 
-    override def find(template: Section): SectionRevision = ???
+    override def attach(previousRevision: SectionRevision, nextRevision: SectionRevision): SectionRevision = ???
+
+    override def find(template: Section, connectionName: String): Option[SectionRevision] = ???
+
+    override def find(currentRevision: SectionRevision, connectionName: String): Option[SectionRevision] = ???
 }

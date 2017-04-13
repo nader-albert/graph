@@ -46,7 +46,7 @@ object DocumentRepository extends RelationalRepository[DocumentRevision] with Gr
             (
                 MATCH(one(templateDocument) and one(revision))
                     andThen
-                CREATE(link(Document.alias, RelTypes.HAS_A.name(), DocumentRevision.alias)),
+                CREATE(leftLink(Document.alias, RelTypes.HAS_A.name(), DocumentRevision.alias)),
 
                 parameters(
                     "documentName", templateDocument.name,
@@ -68,7 +68,7 @@ object DocumentRepository extends RelationalRepository[DocumentRevision] with Gr
             (
                 MATCH(one(documentRevision) and SectionRepository.one(sectionRevision))
                     andThen
-                CREATE(link(DocumentRevision.alias, RelTypes.CONTAINS_A.name(), SectionRevision.alias))
+                CREATE(leftLink(DocumentRevision.alias, RelTypes.CONTAINS_A.name(), SectionRevision.alias))
                 ,
                 parameters(
                     "dcRevisionName", documentRevision.name,
@@ -87,5 +87,9 @@ object DocumentRepository extends RelationalRepository[DocumentRevision] with Gr
         "(%s:%s {name:{dcRevisionName}, uuid:{dcRevisionUuid} } )"
             .format(DocumentRevision.alias, DocumentRevision.label)
 
-    override def find(template: Document): DocumentRevision = ???
+    override def attach(previousRevision: DocumentRevision, nextRevision: DocumentRevision): DocumentRevision = ???
+
+    override def find(template: Document, connectionName: String): Option[DocumentRevision] = ???
+
+    override def find(currentRevision: DocumentRevision, connectionName: String): Option[DocumentRevision] = ???
 }

@@ -29,7 +29,7 @@ class PackageService extends TemplateService[ContractPackage] with VersioningSer
   /**
     * retrieves the latest revision associated with the given template
     **/
-  override def getLatest(template: ContractPackage): ContractPackageRevision = ???
+  override def getLatest(template: ContractPackage): Option[ContractPackageRevision] = ???
 
   /**
     * retrieves the original revision associated with the given template

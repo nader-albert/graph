@@ -1,6 +1,7 @@
 package na.services
 
 import na.models.contracts.{Contract, ContractRevision}
+import na.models.neo4j.RelTypes
 import na.repositories.contracts.ContractRepository
 
 class ContractService extends TemplateService[Contract] with VersioningService[Contract, ContractRevision]{
@@ -19,12 +20,25 @@ class ContractService extends TemplateService[Contract] with VersioningService[C
         ???
     }
 
-    override def getLatest(template: Contract): ContractRevision = {
+    override def getLatest(template: Contract): Option[ContractRevision] = {
         //1- locate contract with all relations in graph ... contract returns with a valid package
         //2- enrich contract with supportive data from RDBMS
 
         //findInGDM(findInRDM(id))
-        ???
+
+        // Get the first Revision attached to this contract -if any-
+        val firstRevision = ContractRepository.find(template, RelTypes.HAS_A.name())
+
+        if(firstRevision.isDefined) {
+            val lastRevision = ContractRepository.find(firstRevision.get, RelTypes.NEXT.name())
+
+            if(lastRevision.isDefined)
+                lastRevision
+            else
+                firstRevision
+        }
+        else
+           None
     }
 
     //override def synchronise(entity: Contract): Contract = {
@@ -58,7 +72,17 @@ class ContractService extends TemplateService[Contract] with VersioningService[C
     override def addRevision(revision: ContractRevision): Unit = {
         ContractRepository.add(revision)
 
-        ContractRepository.attach(revision.contract, revision)
+        // Try to get the latest version attached with enclosed contract, if found attach the current version to it as the next version,
+        // if not attach the current version to parent contract
+
+        val currentVersion = getLatest(revision.contract)
+
+        if(currentVersion.isDefined) {
+            ContractRepository.attach(currentVersion.get, revision)
+        }
+        else {
+            ContractRepository.attach(revision.contract, revision)
+        }
     }
 
     def addPackage(revision: ContractRevision): Unit = {
