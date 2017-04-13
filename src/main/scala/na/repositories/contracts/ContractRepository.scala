@@ -137,9 +137,9 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
     override def find(revision: ContractRevision, connectionName: String): Option[ContractRevision] = {
         execute {
             (
-                MATCH(currentOne(revision) thatIs connectedTo(connectionName, ContractRevision.alias))
+                MATCH(currentOne(revision) thatIs connectedTo(connectionName, ContractRevision.alias+"suffix"))
                     andThen
-                RETURN ("%s, %s".format(ContractRevision.alias, "r"))
+                RETURN ("%s, %s".format(ContractRevision.alias+"suffix", "r"))
                 ,
                 parameters(
                     "ctCurrentRevisionName", revision.name,
@@ -148,8 +148,8 @@ object ContractRepository extends RelationalRepository[ContractRevision] with Gr
             )
         }
             .filter{result => result.hasNext}
-            .map(result => result.list().last)
-            .map(record => ContractRevision(record.get(ContractRevision.alias).get("uuid").asLong(), record.get(ContractRevision.alias).get("name").toString, revision.contract))
+            .map(result => result.list().reverse.last) //TODO: Check if it should really remain reverse or get it back... for some reason I noticed that it doesn't matter ... which of course doesnt make any sense
+            .map(record => ContractRevision(record.get(ContractRevision.alias+"suffix").get("uuid").asString().toLong, record.get(ContractRevision.alias+"suffix").get("name").asString(), revision.contract))
     }
 
     def one(contract :Contract): String =
