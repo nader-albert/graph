@@ -36,14 +36,14 @@ object Constructor extends App {
         println("step4: creating contracts...............")
         val contractRevisions = createContracts(contractPackageRevisions)
 
-        /*println("step5: linking contracts to packages..................")
+        println("step5: linking contracts to packages..................")
         linkContractToPackages(contractRevisions)
 
         println("step6: linking packages to documents .....................")
         linkPackagesToDocuments(contractPackageRevisions)
 
         println("step7: linking documents to sections ...........................")
-        linkDocumentsToSections(documentsRevisions)*/
+        linkDocumentsToSections(documentsRevisions)
 
     }
 
