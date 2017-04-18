@@ -48,10 +48,7 @@ class DocumentService extends TemplateService[Document] with VersioningService[D
         if(firstRevision.isDefined) {
             val lastRevision = DocumentRepository.find(firstRevision.get, RelTypes.NEXT.name())
 
-            if(lastRevision.isDefined)
-                lastRevision
-            else
-                firstRevision
+            if(lastRevision.isDefined) lastRevision else firstRevision
         }
         else
             None

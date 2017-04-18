@@ -32,10 +32,7 @@ class ContractService extends TemplateService[Contract] with VersioningService[C
         if(firstRevision.isDefined) {
             val lastRevision = ContractRepository.find(firstRevision.get, RelTypes.NEXT.name())
 
-            if(lastRevision.isDefined)
-                lastRevision
-            else
-                firstRevision
+            if(lastRevision.isDefined) lastRevision else firstRevision
         }
         else
            None

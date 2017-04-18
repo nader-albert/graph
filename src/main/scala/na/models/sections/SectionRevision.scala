@@ -25,6 +25,12 @@ object SectionRevision {
 
     /**
       * */
+    def apply(uuid: Long, name: String, section: Section): SectionRevision = {
+        SectionRevision(uuid, name, 0, section, None, None)
+    }
+
+    /**
+      * */
     def apply(uuid: Long, name: String, version: Int, section: Section): SectionRevision = {
         SectionRevision(uuid, name, version, section, None, None)
     }

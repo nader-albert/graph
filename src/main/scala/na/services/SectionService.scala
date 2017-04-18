@@ -1,9 +1,7 @@
 package na.services
 
-import na.models.documents.DocumentRevision
-import na.models.packages.ContractPackageRevision
+import na.models.neo4j.RelTypes
 import na.models.sections.{Section, SectionRevision}
-import na.repositories.packages.ContractPackageRepository
 import na.repositories.sections.SectionRepository
 
 class SectionService  extends TemplateService[Section] with VersioningService[Section, SectionRevision] {
@@ -17,13 +15,40 @@ class SectionService  extends TemplateService[Section] with VersioningService[Se
       **/
     override def addRevision(revision: SectionRevision): Unit = {
         SectionRepository.add(revision)
-        SectionRepository.attach(revision.section, revision)
+
+        // Try to get the latest version attached with enclosed contract, if found attach the current version to it as the next version,
+        // if not attach the current version to parent contract
+
+        val currentVersion = getLatest(revision.section)
+
+        if(currentVersion.isDefined) {
+            SectionRepository.attach(currentVersion.get, revision)
+        }
+        else {
+            SectionRepository.attach(revision.section, revision)
+        }
     }
 
     /**
       * retrieves the latest revision associated with the given template
       **/
-    override def getLatest(template: Section): Option[SectionRevision] = ???
+    override def getLatest(template: Section): Option[SectionRevision] = {
+        //1- locate contract with all relations in graph ... contract returns with a valid package
+        //2- enrich contract with supportive data from RDBMS
+
+        //findInGDM(findInRDM(id))
+
+        // Get the first Revision attached to this contract -if any-
+        val firstRevision = SectionRepository.find(template, RelTypes.HAS_A.name())
+
+        if(firstRevision.isDefined) {
+            val lastRevision = SectionRepository.find(firstRevision.get, RelTypes.NEXT.name())
+
+            if(lastRevision.isDefined) lastRevision else firstRevision
+        }
+        else
+            None
+    }
 
     /**
       * retrieves the original revision associated with the given template
