@@ -3,7 +3,6 @@ package na.repositories.packages
 import na.models.documents.DocumentRevision
 import na.models.neo4j.RelTypes
 import na.models.packages.{ContractPackage, ContractPackageRevision}
-import na.repositories.contracts.ContractRepository.current
 import na.repositories.documents.DocumentRepository
 import na.repositories.{GraphRepository, RelationalRepository}
 import org.neo4j.driver.v1.Values.parameters

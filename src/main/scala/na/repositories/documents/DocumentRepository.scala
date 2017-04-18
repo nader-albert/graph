@@ -6,6 +6,7 @@ import na.models.sections.SectionRevision
 import na.repositories.sections.SectionRepository
 import na.repositories.{GraphRepository, RelationalRepository}
 import org.neo4j.driver.v1.Values.parameters
+import scala.collection.JavaConversions._
 
 object DocumentRepository extends RelationalRepository[DocumentRevision] with GraphRepository[Document, DocumentRevision]{
 
@@ -79,17 +80,84 @@ object DocumentRepository extends RelationalRepository[DocumentRevision] with Gr
         }
     }
 
-    def one(contract :Document): String =
+    override def attach(currentRevision: DocumentRevision, nextRevision: DocumentRevision): DocumentRevision = {
+        execute {
+            (
+                MATCH(current(currentRevision) and next(nextRevision))
+                    andThen
+                CREATE(leftToRightLink(DocumentRevision.alias, RelTypes.NEXT.name(), DocumentRevision.alias + "next"))
+                    andThen
+                CREATE(rightToLeftLink(DocumentRevision.alias, RelTypes.PREVIOUS.name(), DocumentRevision.alias + "next"))
+                ,
+                parameters(
+                    "dcCurrentRevisionName", currentRevision.name,
+                    "dcCurrentRevisionUuid", currentRevision.uuid.toString,
+                    "dcNextRevisionUuid", nextRevision.uuid.toString,
+                    "dcNextRevisionName", nextRevision.name)
+            )
+        }
+
+        nextRevision
+    }
+
+    override def find(document: Document, connectionName: String): Option[DocumentRevision] = {
+        execute {
+            (
+                MATCH(one(document) thatIs connectedTo(connectionName, DocumentRevision.alias))
+                    andThen
+                    RETURN ("%s, %s, %s".format(Document.alias, "r", DocumentRevision.alias))
+                ,
+                parameters(
+                    "documentName", document.name,
+                    "documentUuid", document.uuid.toString
+                )
+            )
+        }.filter {result => result.hasNext}
+            .map (result => result.next())
+            .map {
+                record => DocumentRevision(
+                    record.get(DocumentRevision.alias).get("uuid").asString().toLong,
+                    record.get(DocumentRevision.alias).get("name").asString(),
+                    document)
+            }
+    }
+
+    override def find(revision: DocumentRevision, connectionName: String): Option[DocumentRevision] = {
+        execute {
+            (
+                MATCH(current(revision) thatIs connectedTo(connectionName, DocumentRevision.alias + "suffix"))
+                    andThen
+                    RETURN ("%s, %s".format(DocumentRevision.alias + "suffix", "r"))
+                ,
+                parameters(
+                    "dcCurrentRevisionName", revision.name,
+                    "dcCurrentRevisionUuid", revision.uuid.toString
+                )
+            )
+        } //TODO: Could be done better by specifying the end of the path in the query itself instead of fetching the last record in the result !
+            .filter{result => result.hasNext}
+            .map(result => result.list().reverse.last) //TODO: Check if it should really remain reverse or get it back... for some reason I noticed that it doesn't matter ... which of course doesnt make any sense
+            .map { record =>
+            DocumentRevision(
+                record.get(DocumentRevision.alias+"suffix").get("uuid").asString().toLong,
+                record.get(DocumentRevision.alias+"suffix").get("name").asString(),
+                revision.document)
+        }
+    }
+
+    def one(document :Document): String =
         "(%s:%s {name:{documentName}, uuid:{documentUuid} } )"
             .format(Document.alias, Document.label)
 
-    def one(contractRevision: DocumentRevision): String =
+    def one(documentRevision: DocumentRevision): String =
         "(%s:%s {name:{dcRevisionName}, uuid:{dcRevisionUuid} } )"
             .format(DocumentRevision.alias, DocumentRevision.label)
 
-    override def attach(previousRevision: DocumentRevision, nextRevision: DocumentRevision): DocumentRevision = ???
+    def current(documentRevision: DocumentRevision): String =
+        "(%s:%s {name:{dcCurrentRevisionName}, uuid:{dcCurrentRevisionUuid} } )"
+            .format(DocumentRevision.alias, DocumentRevision.label)
 
-    override def find(template: Document, connectionName: String): Option[DocumentRevision] = ???
-
-    override def find(currentRevision: DocumentRevision, connectionName: String): Option[DocumentRevision] = ???
+    def next(documentRevision: DocumentRevision): String =
+        "(%s:%s {name:{dcNextRevisionName}, uuid:{dcNextRevisionUuid} } )"
+            .format(DocumentRevision.alias + "next", DocumentRevision.label) //To differentiate between aliases used in current and next
 }
