@@ -20,6 +20,10 @@ object ContractPackageRevision {
     val label = "Package_Revision"
     val alias = "pkRevision"
 
+    def apply(uuid: Long, name: String, contractPackage: ContractPackage): ContractPackageRevision = {
+        ContractPackageRevision(uuid, name, 0, contractPackage, None, None, Seq.empty[DocumentRevision])
+    }
+
     def apply(uuid: Long, name: String, version: Int, contractPackage: ContractPackage): ContractPackageRevision = {
         ContractPackageRevision(uuid, name, version, contractPackage, None, None, Seq.empty[DocumentRevision])
     }

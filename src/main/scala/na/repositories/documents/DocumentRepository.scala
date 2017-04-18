@@ -46,7 +46,7 @@ object DocumentRepository extends RelationalRepository[DocumentRevision] with Gr
             (
                 MATCH(one(templateDocument) and one(revision))
                     andThen
-                CREATE(leftLink(Document.alias, RelTypes.HAS_A.name(), DocumentRevision.alias)),
+                CREATE(leftToRightLink(Document.alias, RelTypes.HAS_A.name(), DocumentRevision.alias)),
 
                 parameters(
                     "documentName", templateDocument.name,
@@ -68,7 +68,7 @@ object DocumentRepository extends RelationalRepository[DocumentRevision] with Gr
             (
                 MATCH(one(documentRevision) and SectionRepository.one(sectionRevision))
                     andThen
-                CREATE(leftLink(DocumentRevision.alias, RelTypes.CONTAINS_A.name(), SectionRevision.alias))
+                CREATE(leftToRightLink(DocumentRevision.alias, RelTypes.CONTAINS_A.name(), SectionRevision.alias))
                 ,
                 parameters(
                     "dcRevisionName", documentRevision.name,

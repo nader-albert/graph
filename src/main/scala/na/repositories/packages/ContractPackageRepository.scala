@@ -3,9 +3,12 @@ package na.repositories.packages
 import na.models.documents.DocumentRevision
 import na.models.neo4j.RelTypes
 import na.models.packages.{ContractPackage, ContractPackageRevision}
+import na.repositories.contracts.ContractRepository.current
 import na.repositories.documents.DocumentRepository
 import na.repositories.{GraphRepository, RelationalRepository}
 import org.neo4j.driver.v1.Values.parameters
+
+import scala.collection.JavaConversions._
 
 object ContractPackageRepository extends RelationalRepository[ContractPackageRevision]
     with GraphRepository[ContractPackage, ContractPackageRevision]{
@@ -51,7 +54,7 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
             (
                 MATCH(one(templatePackage) and one(revision))
                     andThen
-                CREATE(leftLink(ContractPackage.alias, RelTypes.HAS_A.name(), ContractPackageRevision.alias)),
+                CREATE(leftToRightLink(ContractPackage.alias, RelTypes.HAS_A.name(), ContractPackageRevision.alias)),
 
                 parameters(
                     "packageName", templatePackage.name,
@@ -71,30 +74,97 @@ object ContractPackageRepository extends RelationalRepository[ContractPackageRev
     def attach(contractPackageRevision: ContractPackageRevision, documentRevision: DocumentRevision): Unit = {
         execute {
             (
-                MATCH(one(contractPackageRevision) and DocumentRepository.one(documentRevision))
+                MATCH(current(contractPackageRevision) and DocumentRepository.one(documentRevision))
                     andThen
-                CREATE(leftLink(ContractPackageRevision.alias, RelTypes.CONTAINS_A.name(), DocumentRevision.alias))
+                CREATE(leftToRightLink(ContractPackageRevision.alias, RelTypes.CONTAINS_A.name(), DocumentRevision.alias))
                 ,
                 parameters(
-                    "pkRevisionName", contractPackageRevision.name,
-                    "pkRevisionUuid", contractPackageRevision.uuid.toString,
+                    "pkCurrentRevisionName", contractPackageRevision.name,
+                    "pkCurrentRevisionUuid", contractPackageRevision.uuid.toString,
                     "dcRevisionName", documentRevision.name,
                     "dcRevisionUuid", documentRevision.uuid.toString)
             )
         }
     }
 
+    override def attach(currentRevision: ContractPackageRevision, nextRevision: ContractPackageRevision): ContractPackageRevision = {
+        execute {
+            (
+                MATCH(current(currentRevision) and next(nextRevision))
+                    andThen
+                CREATE(leftToRightLink(ContractPackageRevision.alias, RelTypes.NEXT.name(), ContractPackageRevision.alias + "next"))
+                    andThen
+                CREATE(rightToLeftLink(ContractPackageRevision.alias, RelTypes.PREVIOUS.name(), ContractPackageRevision.alias + "next"))
+                ,
+                parameters(
+                    "pkCurrentRevisionName", currentRevision.name,
+                    "pkCurrentRevisionUuid", currentRevision.uuid.toString,
+                    "pkNextRevisionUuid", nextRevision.uuid.toString,
+                    "pkNextRevisionName", nextRevision.name)
+            )
+        }
+
+        nextRevision
+    }
+
+    override def find(contractPackage: ContractPackage, connectionName: String): Option[ContractPackageRevision] = {
+        execute {
+            (
+                MATCH(one(contractPackage) thatIs connectedTo(connectionName, ContractPackageRevision.alias))
+                    andThen
+                RETURN ("%s, %s, %s".format(ContractPackage.alias, "r", ContractPackageRevision.alias))
+                ,
+                parameters(
+                    "packageName", contractPackage.name,
+                    "packageUuid", contractPackage.uuid.toString
+                )
+            )
+        }.filter {result => result.hasNext}
+            .map(result => result.next())
+            .map {
+                record => ContractPackageRevision(
+                    record.get(ContractPackageRevision.alias).get("uuid").asString().toLong,
+                    record.get(ContractPackageRevision.alias).get("name").asString(),
+                    contractPackage)
+            }
+    }
+
+    override def find(revision: ContractPackageRevision, connectionName: String): Option[ContractPackageRevision] = {
+        execute {
+            (
+                MATCH(current(revision) thatIs connectedTo(connectionName, ContractPackageRevision.alias + "suffix"))
+                    andThen
+                    RETURN ("%s, %s".format(ContractPackageRevision.alias + "suffix", "r"))
+                ,
+                parameters(
+                    "pkCurrentRevisionName", revision.name,
+                    "pkCurrentRevisionUuid", revision.uuid.toString
+                )
+            )
+        } //TODO: Could be done better by specifying the end of the path in the query itself instead of fetching the last record in the result !
+            .filter{result => result.hasNext}
+            .map(result => result.list().reverse.last) //TODO: Check if it should really remain reverse or get it back... for some reason I noticed that it doesn't matter ... which of course doesnt make any sense
+            .map { record =>
+                ContractPackageRevision(
+                    record.get(ContractPackageRevision.alias+"suffix").get("uuid").asString().toLong,
+                    record.get(ContractPackageRevision.alias+"suffix").get("name").asString(),
+                    revision.contractPackage)
+            }
+    }
+
     def one(contract :ContractPackage): String =
         "(%s:%s {name:{packageName}, uuid:{packageUuid} } )"
             .format(ContractPackage.alias, ContractPackage.label)
 
-    def one(contractRevision: ContractPackageRevision): String =
+   def one(contractRevision: ContractPackageRevision): String =
         "(%s:%s {name:{pkRevisionName}, uuid:{pkRevisionUuid} } )"
             .format(ContractPackageRevision.alias, ContractPackageRevision.label)
 
-    override def attach(previousRevision: ContractPackageRevision, nextRevision: ContractPackageRevision): ContractPackageRevision = ???
+    def current(contractPackageRevision: ContractPackageRevision): String =
+        "(%s:%s {name:{pkCurrentRevisionName}, uuid:{pkCurrentRevisionUuid} } )"
+            .format(ContractPackageRevision.alias, ContractPackageRevision.label)
 
-    override def find(template: ContractPackage, connectionName: String): Option[ContractPackageRevision] = ???
-
-    override def find(currentRevision: ContractPackageRevision, connectionName: String): Option[ContractPackageRevision] = ???
+    def next(contractPackageRevision: ContractPackageRevision): String =
+        "(%s:%s {name:{pkNextRevisionName}, uuid:{pkNextRevisionUuid} } )"
+            .format(ContractPackageRevision.alias + "next", ContractPackageRevision.label) //To differentiate between aliases used in current and next
 }

@@ -43,7 +43,7 @@ object SectionRepository extends RelationalRepository[SectionRevision] with Grap
             (
                 MATCH(one(section) and one(revision))
                     andThen
-                CREATE(leftLink(Section.alias, RelTypes.HAS_A.name(), SectionRevision.alias)),
+                CREATE(leftToRightLink(Section.alias, RelTypes.HAS_A.name(), SectionRevision.alias)),
 
                 parameters(
                     "sectionName", section.name,

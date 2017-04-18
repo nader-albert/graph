@@ -56,7 +56,7 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
       * connects the left hand to the right hand side
       * creates a relationship that is directed from left to right
       * */
-    def leftLink(left: String, to: String, right: String): String =
+    def leftToRightLink(left: String, to: String, right: String): String =
         "(%s)-[rLeft:%s]->(%s)"
             .format(left, to, right)
 
@@ -64,7 +64,7 @@ trait GraphRepository[A <: Template, B <: Entity with Versioned] {
       * connects the right hand to the left hand side
       * creates a relationship that is directed from right to left
       * */
-    def rightLink(left: String, to: String, right: String): String =
+    def rightToLeftLink(left: String, to: String, right: String): String =
         "(%s)-[rRight:%s]->(%s)"
             .format(right, to, left)
 
